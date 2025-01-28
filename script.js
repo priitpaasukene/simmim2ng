@@ -1,89 +1,109 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const rulesScreen = document.getElementById('rules-screen');
-    const gameScreen = document.getElementById('game-screen');
-    const startGameBtn = document.getElementById('start-game-btn');
-    const resetGameBtn = document.getElementById('reset-game-btn');
-    const board = document.getElementById('board');
-    const statusText = document.getElementById('status');
+const startButton = document.getElementById("start-game");
+const resetButton = document.getElementById("reset");
+const rules = document.getElementById("rules");
+const boardContainer = document.getElementById("board-container");
+const statusText = document.getElementById("status");
+const boardElement = document.getElementById("board");
 
-    let gameState;
-    const PLAYER = 'chicken';
-    const COMPUTER = 'crocodile';
+let board = Array(3).fill(null).map(() => Array(3).fill(null));
+let currentPlayer = "player"; // player or computer
+let gameOver = false;
 
-    startGameBtn.addEventListener('click', startGame);
-    resetGameBtn.addEventListener('click', resetGame);
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    function startGame() {
-        rulesScreen.classList.add('hidden');
-        gameScreen.classList.remove('hidden');
-        resetGame();
-    }
+const checkWinner = (team) => {
+  const winPatterns = [
+    [[0, 0], [0, 1], [0, 2]],
+    [[1, 0], [1, 1], [1, 2]],
+    [[2, 0], [2, 1], [2, 2]],
+    [[0, 0], [1, 0], [2, 0]],
+    [[0, 1], [1, 1], [2, 1]],
+    [[0, 2], [1, 2], [2, 2]],
+    [[0, 0], [1, 1], [2, 2]],
+    [[0, 2], [1, 1], [2, 0]],
+  ];
 
-    function resetGame() {
-        gameState = {
-            board: Array(9).fill(null),
-            currentPlayer: PLAYER,
-            gameOver: false,
-        };
-        renderBoard();
-        statusText.textContent = "Your turn!";
-    }
+  return winPatterns.some((pattern) =>
+    pattern.every(([r, c]) => board[r][c] === team)
+  );
+};
 
-    function renderBoard() {
-        board.innerHTML = '';
-        gameState.board.forEach((cell, index) => {
-            const cellDiv = document.createElement('div');
-            cellDiv.classList.add('cell');
-            if (cell) cellDiv.classList.add(cell);
-            cellDiv.dataset.index = index;
-            board.appendChild(cellDiv);
-        });
-        board.querySelectorAll('.cell').forEach(cell => {
-            cell.addEventListener('click', handlePlayerTurn);
-        });
-    }
+const renderBoard = () => {
+  boardElement.innerHTML = "";
+  board.forEach((row, r) => {
+    row.forEach((cell, c) => {
+      const cellDiv = document.createElement("div");
+      cellDiv.classList.add("cell");
+      if (cell) cellDiv.classList.add(cell);
+      cellDiv.dataset.row = r;
+      cellDiv.dataset.col = c;
+      cellDiv.textContent = cell === "egg" ? "🥚" : cell === "chicken" ? "🐔" : cell === "crocodile" ? "🐊" : "";
+      cellDiv.addEventListener("click", () => handlePlayerTurn(r, c));
+      boardElement.appendChild(cellDiv);
+    });
+  });
+};
 
-    function handlePlayerTurn(e) {
-        if (gameState.gameOver || gameState.currentPlayer !== PLAYER) return;
-        const index = +e.target.dataset.index;
+const handlePlayerTurn = (row, col) => {
+  if (gameOver || currentPlayer !== "player" || board[row][col] === "chicken" || board[row][col] === "crocodile") return;
 
-        if (gameState.board[index] === null) {
-            gameState.board[index] = 'egg';
-            endTurn();
-        } else if (gameState.board[index] === 'egg') {
-            gameState.board[index] = PLAYER;
-            endTurn();
-        }
-    }
+  if (board[row][col] === null) {
+    board[row][col] = "egg";
+  } else if (board[row][col] === "egg") {
+    board[row][col] = "chicken";
+  }
 
-    function endTurn() {
-        renderBoard();
-        if (checkWin(PLAYER)) {
-            statusText.textContent = "You win!";
-            gameState.gameOver = true;
-        } else if (gameState.board.every(cell => cell !== null)) {
-            statusText.textContent = "It's a draw!";
-            gameState.gameOver = true;
-        } else {
-            gameState.currentPlayer = gameState.currentPlayer === PLAYER ? COMPUTER : PLAYER;
-            if (gameState.currentPlayer === COMPUTER) {
-                statusText.textContent = "Computer's turn...";
-                setTimeout(computerTurn, 1000);
-            } else {
-                statusText.textContent = "Your turn!";
-            }
-        }
-    }
+  currentPlayer = "computer";
+  statusText.textContent = "Computer's Turn";
+  renderBoard();
 
-    function computerTurn() {
-        const emptyIndices = gameState.board
-            .map((cell, index) => (cell === null ? index : null))
-            .filter(index => index !== null);
-        const eggIndices = gameState.board
-            .map((cell, index) => (cell === 'egg' ? index : null))
-            .filter(index => index !== null);
+  if (checkWinner("chicken")) return endGame("You Win!");
 
-        let move;
-        if (emptyIndices.length > 0) {
-            move = emptyIndices[Math.floor(Math.random() *
+  delay(1000).then(handleComputerTurn);
+};
+
+const handleComputerTurn = () => {
+  if (gameOver) return;
+
+  const emptyCells = [];
+  board.forEach((row, r) => row.forEach((cell, c) => {
+    if (cell === null || cell === "egg") emptyCells.push([r, c]);
+  }));
+
+  if (emptyCells.length === 0) return endGame("It's a Draw!");
+
+  const [row, col] = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+  if (board[row][col] === null) {
+    board[row][col] = "egg";
+  } else if (board[row][col] === "egg") {
+    board[row][col] = "crocodile";
+  }
+
+  if (checkWinner("crocodile")) return endGame("Computer Wins!");
+
+  currentPlayer = "player";
+  statusText.textContent = "Your Turn";
+  renderBoard();
+};
+
+const endGame = (message) => {
+  gameOver = true;
+  statusText.textContent = message;
+};
+
+const resetGame = () => {
+  board = Array(3).fill(null).map(() => Array(3).fill(null));
+  currentPlayer = "player";
+  gameOver = false;
+  statusText.textContent = "Your Turn";
+  renderBoard();
+};
+
+startButton.addEventListener("click", () => {
+  rules.classList.add("hidden");
+  boardContainer.classList.remove("hidden");
+  renderBoard();
+});
+
+resetButton.addEventListener("click", resetGame);
 

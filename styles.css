@@ -1,59 +1,51 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f9;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f4f4f4;
 }
 
-#game-container {
-    margin: 50px auto;
-    max-width: 500px;
-}
-
-#rules-screen, #game-screen {
-    padding: 20px;
+#game {
+  text-align: center;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 #board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 5px;
-    margin: 20px auto;
-    width: 300px;
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-template-rows: repeat(3, 100px);
+  gap: 5px;
+  margin: 20px auto;
 }
 
 .cell {
-    width: 100px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #ccc;
-    font-size: 24px;
-    cursor: pointer;
-    background-color: #fff;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  font-size: 24px;
+  cursor: pointer;
+  user-select: none;
 }
 
 .cell.egg {
-    background-color: #fef9c3;
+  color: #f4a261;
 }
 
 .cell.chicken {
-    background-color: #ffc1c1;
+  color: #2a9d8f;
 }
 
 .cell.crocodile {
-    background-color: #c1d4ff;
-}
-
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+  color: #e76f51;
 }
 

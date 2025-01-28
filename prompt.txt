@@ -9,6 +9,7 @@ Please create simple browser game with following specfications:
    * computer takes random legal action during his turn
 * under the rules "start game" button starts the game when pressed
 * After the game ends, player can reset the board and start new game
+* all corner cases and exceptions are caught. debugging error is displayed when game is in unknown state and option to reset to initial state is available.
 
 Rules of the game are following:
 * player plays "team chicken"

@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chicken vs Crocodiles</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chicken vs Crocodiles</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <div id="rules-screen">
-            <h1>Chicken vs Crocodiles</h1>
-            <p>During your turn you can:</p>
-            <ul>
-                <li>Place an egg into an empty cell.</li>
-                <li>Evolve an egg into a chicken.</li>
-            </ul>
-            <p>Computer takes random legal action during its turn.</p>
-            <button id="start-game-btn">Start Game</button>
-        </div>
-
-        <div id="game-screen" class="hidden">
-            <div id="board"></div>
-            <p id="status"></p>
-            <button id="reset-game-btn">Reset Game</button>
-        </div>
+  <div id="game">
+    <div id="rules">
+      <h1>Chicken vs Crocodiles</h1>
+      <p>
+        During your turn, you can:
+        <ul>
+          <li>Place an egg into an empty cell.</li>
+          <li>Evolve an egg into a chicken.</li>
+        </ul>
+        Computer takes random legal action during its turn.<br>
+        Win by filling a row, column, or diagonal with your creatures!
+      </p>
+      <button id="start-game">Start Game</button>
     </div>
-    <script src="script.js"></script>
+    <div id="board-container" class="hidden">
+      <h2 id="status">Your Turn</h2>
+      <div id="board"></div>
+      <button id="reset">Reset Game</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
 
