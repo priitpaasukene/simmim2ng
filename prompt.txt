@@ -1,8 +1,10 @@
 Please create simple browser game with following specfications:
 * All needed files will be served from single directory. Linked URL's are not absolute.
-* Game starts with screen displaying the rules
+* Game starts with screen displaying the rules.
 * After the game ends, player can reset the board and start new game
 * Game is in 2 modes: 2-player hot seat, and, single player vs computer
+* 2 player choice is disabled when game is active.
+* when game is over - player can switch between 1 player and 2 player modes, then reset the game board.
 * Computer - when enabled - takes random legal action
 
 Rules of the game are following:
@@ -11,9 +13,12 @@ Rules of the game are following:
 * Game starts with empty 3x3 grid
 * Players take turns. When players turn is over, turn goes to opponent
 *  during his turn player can take one of following actions:
-1) place egg in any free square
+1) place egg in any free cell
+  * if all cells are empty, this is the only option players can take.
 2a) evolve egg into chicken (for team chicken)
 2b) evolve egg into crocodile (for team crocodile)
+* if player clicks on empty cell - egg is placed
+* if player clicks on a cell with egg in it - the egg is involved to chicken or crocodile
 * if player achieves 1 row, 1 column or 1 diagonal filled with his creatures - he is a winner
 * If one player wins or there is no more legal turns - no more turns are allowed
 

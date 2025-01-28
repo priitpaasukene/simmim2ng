@@ -1,200 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Chicken vs Team Crocodile</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
-        }
-        .hidden { display: none; }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 5px;
-        }
-        .cell {
-            width: 100px;
-            height: 100px;
-            border: 1px solid black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        button {
-            margin: 10px;
-            padding: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chicken vs Crocodile</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="game">
     <div id="rules-screen">
-        <h1>Team Chicken vs Team Crocodile</h1>
-        <p>Rules:</p>
-        <ul>
-            <li>First player chooses their team: Chicken or Crocodile.</li>
-            <li>Players take turns placing eggs or evolving them into chickens or crocodiles.</li>
-            <li>First to complete a row, column, or diagonal with their creatures wins.</li>
-            <li>If no moves are left, the game is a draw.</li>
-        </ul>
-        <button id="start-game">Start Game</button>
+      <h1>Chicken vs Crocodile</h1>
+      <p>Rules:</p>
+      <ul>
+        <li>First player chooses Team Chicken or Team Crocodile.</li>
+        <li>Place eggs, evolve them into creatures, and aim to align a row, column, or diagonal with your creatures to win.</li>
+        <li>2 modes: Hot Seat (2-player) and Single Player vs Computer.</li>
+      </ul>
+      <button id="start-game">Start Game</button>
     </div>
 
     <div id="game-screen" class="hidden">
-        <h2 id="status">Player 1: Choose your team</h2>
-        <div id="team-selection">
-            <button id="team-chicken">Team Chicken</button>
-            <button id="team-crocodile">Team Crocodile</button>
-        </div>
-        <div id="board" class="grid hidden"></div>
-        <button id="reset-game">Reset Game</button>
+      <div id="controls">
+        <button id="switch-mode" disabled>Switch Mode</button>
+        <button id="reset-game">Reset Board</button>
+        <span id="player-choice"></span>
+      </div>
+      <div id="grid"></div>
+      <p id="status"></p>
     </div>
-
-    <script>
-        const rulesScreen = document.getElementById('rules-screen');
-        const gameScreen = document.getElementById('game-screen');
-        const startGameButton = document.getElementById('start-game');
-        const resetGameButton = document.getElementById('reset-game');
-        const status = document.getElementById('status');
-        const teamSelection = document.getElementById('team-selection');
-        const board = document.getElementById('board');
-
-        let grid = Array(3).fill(null).map(() => Array(3).fill(null));
-        let currentPlayer = 1;
-        let playerTeam = null;
-        let computerTeam = null;
-        let gameActive = true;
-
-        function checkWinner() {
-            const winningLines = [
-                [[0, 0], [0, 1], [0, 2]],
-                [[1, 0], [1, 1], [1, 2]],
-                [[2, 0], [2, 1], [2, 2]],
-                [[0, 0], [1, 0], [2, 0]],
-                [[0, 1], [1, 1], [2, 1]],
-                [[0, 2], [1, 2], [2, 2]],
-                [[0, 0], [1, 1], [2, 2]],
-                [[0, 2], [1, 1], [2, 0]]
-            ];
-
-            for (const line of winningLines) {
-                const [a, b, c] = line;
-                if (grid[a[0]][a[1]] && grid[a[0]][a[1]] === grid[b[0]][b[1]] && grid[a[0]][a[1]] === grid[c[0]][c[1]]) {
-                    return grid[a[0]][a[1]];
-                }
-            }
-            return null;
-        }
-
-        function isDraw() {
-            return grid.flat().every(cell => cell !== null);
-        }
-
-        function updateStatus() {
-            const winner = checkWinner();
-            if (winner) {
-                status.textContent = `${winner} wins!`;
-                gameActive = false;
-            } else if (isDraw()) {
-                status.textContent = 'Draw!';
-                gameActive = false;
-            } else {
-                status.textContent = `Player ${currentPlayer}'s turn (${currentPlayer === 1 ? playerTeam : computerTeam})`;
-            }
-        }
-
-        function computerMove() {
-            const availableMoves = [];
-            grid.forEach((row, i) => row.forEach((cell, j) => {
-                if (cell === null) availableMoves.push([i, j]);
-            }));
-
-            if (availableMoves.length > 0) {
-                const [x, y] = availableMoves[Math.floor(Math.random() * availableMoves.length)];
-                grid[x][y] = computerTeam;
-                renderBoard();
-                currentPlayer = 1;
-                updateStatus();
-            }
-        }
-
-        function handleCellClick(event) {
-            if (!gameActive || currentPlayer !== 1) return;
-
-            const cell = event.target;
-            const x = parseInt(cell.dataset.x, 10);
-            const y = parseInt(cell.dataset.y, 10);
-
-            if (grid[x][y] === null) {
-                grid[x][y] = playerTeam;
-                renderBoard();
-                currentPlayer = 2;
-                updateStatus();
-
-                if (computerTeam && gameActive) {
-                    setTimeout(computerMove, 500);
-                }
-            }
-        }
-
-        function renderBoard() {
-            board.innerHTML = '';
-            grid.forEach((row, i) => {
-                row.forEach((cell, j) => {
-                    const cellElement = document.createElement('div');
-                    cellElement.classList.add('cell');
-                    cellElement.dataset.x = i;
-                    cellElement.dataset.y = j;
-                    cellElement.textContent = cell ? (cell === 'chicken' ? '🐔' : '🐊') : '';
-                    cellElement.addEventListener('click', handleCellClick);
-                    board.appendChild(cellElement);
-                });
-            });
-        }
-
-        startGameButton.addEventListener('click', () => {
-            rulesScreen.classList.add('hidden');
-            gameScreen.classList.remove('hidden');
-        });
-
-        resetGameButton.addEventListener('click', () => {
-            grid = Array(3).fill(null).map(() => Array(3).fill(null));
-            currentPlayer = 1;
-            gameActive = true;
-            playerTeam = null;
-            computerTeam = null;
-            status.textContent = 'Player 1: Choose your team';
-            teamSelection.classList.remove('hidden');
-            board.classList.add('hidden');
-        });
-
-        document.getElementById('team-chicken').addEventListener('click', () => {
-            playerTeam = 'chicken';
-            computerTeam = 'crocodile';
-            teamSelection.classList.add('hidden');
-            board.classList.remove('hidden');
-            renderBoard();
-            updateStatus();
-        });
-
-        document.getElementById('team-crocodile').addEventListener('click', () => {
-            playerTeam = 'crocodile';
-            computerTeam = 'chicken';
-            teamSelection.classList.add('hidden');
-            board.classList.remove('hidden');
-            renderBoard();
-            updateStatus();
-        });
-    </script>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
