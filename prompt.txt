@@ -26,10 +26,11 @@ Rules of the game are following:
 * if player clicks on empty cell - egg is placed in the cell and it's opponents turn
 * if player clicks on a cell with egg in it - the egg is involved to chicken and it's opponents turn
 * if player achieves 1 row, 1 column or 1 diagonal filled with his creatures - he is a winner
+* after players turn is finished, there is 1 second delay before computers turn.
 * computer plays random legal action
 * if computer clicks on empty cell - egg is placed in the cell and it's opponents turn
 * if computer clicks on a cell with egg in it - the egg is evolved to crocodile and it's opponent turn
 * if computer achieves 1 row, 1 column or 1 diagonal filled with his creatures - he is a winner
-* If one player wins or there is no more legal turns - no more turns are allowed
+* If one player wins or all cells contain chicken and crocodiles - no more turns are allowed
 
 Please answer with file names and code.
