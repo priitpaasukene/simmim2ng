@@ -1,34 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chicken vs Crocodile</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chicken vs Crocodiles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        .rules, .game-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid black;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <div id="game">
-    <div id="rules-screen">
-      <h1>Chicken vs Crocodile</h1>
-      <p>Rules:</p>
-      <ul>
-        <li>First player chooses Team Chicken or Team Crocodile.</li>
-        <li>Place eggs, evolve them into creatures, and aim to align a row, column, or diagonal with your creatures to win.</li>
-        <li>2 modes: Hot Seat (2-player) and Single Player vs Computer.</li>
-      </ul>
-      <button id="start-game">Start Game</button>
+    <div class="rules">
+        <h1>Chicken vs Crocodiles</h1>
+        <p>This is Chicken vs Crocodiles game</p>
+        <p>During your turn you can:</p>
+        <ul>
+            <li>Place egg into an empty cell</li>
+            <li>Evolve egg into a chicken</li>
+        </ul>
+        <p>Computer takes a random legal action during its turn.</p>
+        <button id="start-game">Start Game</button>
     </div>
 
-    <div id="game-screen" class="hidden">
-      <div id="controls">
-        <button id="switch-mode" disabled>Switch Mode</button>
-        <button id="reset-game">Reset Board</button>
-        <span id="player-choice"></span>
-      </div>
-      <div id="grid"></div>
-      <p id="status"></p>
+    <div class="game-container hidden">
+        <div class="grid" id="grid"></div>
+        <p id="status"></p>
+        <button id="reset-game">Reset Game</button>
     </div>
-  </div>
-  <script src="script.js"></script>
+
+    <script>
+        const startButton = document.getElementById('start-game');
+        const resetButton = document.getElementById('reset-game');
+        const rulesContainer = document.querySelector('.rules');
+        const gameContainer = document.querySelector('.game-container');
+        const gridElement = document.getElementById('grid');
+        const statusElement = document.getElementById('status');
+
+        let board;
+        let currentPlayer;
+        let gameActive;
+
+        const initializeGame = () => {
+            board = Array(3).fill(null).map(() => Array(3).fill(null));
+            currentPlayer = 'chicken';
+            gameActive = true;
+            updateGrid();
+            statusElement.textContent = "Your turn!";
+        };
+
+        const updateGrid = () => {
+            gridElement.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.textContent = board[i][j] === 'egg' ? '🥚' : board[i][j] === 'chicken' ? '🐔' : board[i][j] === 'crocodile' ? '🐊' : '';
+                    cell.addEventListener('click', handlePlayerAction);
+                    gridElement.appendChild(cell);
+                }
+            }
+        };
+
+        const handlePlayerAction = (event) => {
+            if (!gameActive) return;
+
+            const row = event.target.dataset.row;
+            const col = event.target.dataset.col;
+
+            if (board[row][col] === null) {
+                board[row][col] = 'egg';
+                switchTurn();
+            } else if (board[row][col] === 'egg' && currentPlayer === 'chicken') {
+                board[row][col] = 'chicken';
+                switchTurn();
+            }
+        };
+
+        const switchTurn = () => {
+            if (checkWin()) {
+                gameActive = false;
+                statusElement.textContent = `${currentPlayer === 'chicken' ? 'You' : 'Computer'} win!`;
+                return;
+            }
+
+            if (board.flat().every(cell => cell)) {
+                gameActive = false;
+                statusElement.textContent = "It's a draw!";
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'chicken' ? 'crocodile' : 'chicken';
+
+            if (currentPlayer === 'crocodile') {
+                statusElement.textContent = "Computer's turn...";
+                setTimeout(handleComputerAction, 1000);
+            } else {
+                statusElement.textContent = "Your turn!";
+                updateGrid();
+            }
+        };
+
+        const handleComputerAction = () => {
+            const emptyCells = [];
+            const eggCells = [];
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (board[i][j] === null) emptyCells.push([i, j]);
+                    if (board[i][j] === 'egg') eggCells.push([i, j]);
+                }
+            }
+
+            if (eggCells.length > 0 && Math.random() > 0.5) {
+                const [row, col] = eggCells[Math.floor(Math.random() * eggCells.length)];
+                board[row][col] = 'crocodile';
+            } else if (emptyCells.length > 0) {
+                const [row, col] = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                board[row][col] = 'egg';
+            }
+
+            switchTurn();
+        };
+
+        const checkWin = () => {
+            const lines = [
+                ...board,
+                [board[0][0], board[1][0], board[2][0]],
+                [board[0][1], board[1][1], board[2][1]],
+                [board[0][2], board[1][2], board[2][2]],
+                [board[0][0], board[1][1], board[2][2]],
+                [board[0][2], board[1][1], board[2][0]],
+            ];
+
+            return lines.some(line => line.every(cell => cell === currentPlayer));
+        };
+
+        startButton.addEventListener('click', () => {
+            rulesContainer.classList.add('hidden');
+            gameContainer.classList.remove('hidden');
+            initializeGame();
+        });
+
+        resetButton.addEventListener('click', initializeGame);
+    </script>
 </body>
 </html>
