@@ -1,8 +1,10 @@
 # simmim2ng
-One prompt challenge #onepromptchallenge
+#onepromptchallenge
 
 One prompt challenge started by Joosep Simm on linkedIn:
 https://www.linkedin.com/posts/joosepsimm_one-prompt-challenge-the-idea-activity-7285307004724645889-c7Vy
+
+https://github.com/Venturing-Intellect/one-prompt-challenge
 
 I tried to make simple tic-tac-toe like game with a twist.
 Let's see if AI can gasp the nuances.
@@ -17,3 +19,5 @@ History of prompt:
 * Iteration 3 - single html with some bugs in game mechanics
 * Iteration 4 - either I made error with filenames or game did not work. Computer turns were instant.
 * Iteration 5 - Game mechanics are there. Some bugs are still there (eg - when computer wins, last crocodile is not displayed)
+
+
